@@ -6,7 +6,6 @@ CREATE TABLE profiles (
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    is_active BOOLEAN DEFAULT 1,
     UNIQUE(name)
 );
 
