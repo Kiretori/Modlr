@@ -18,7 +18,8 @@ from PyQt6.QtCore import Qt
 import os
 from app.utils import get_input_features_from_file
 import database
-from database.scripts.db_queries import PresetData
+from database.scripts.db_queries import ProfileData, ModelBlueprint, insert_complete_preset
+
 
 class ProfileForm(QWidget):
     def __init__(self):
@@ -79,10 +80,9 @@ class ProfileForm(QWidget):
         self.model_type_dropdown.addItem("Classifier")
         layout.addWidget(self.model_type_dropdown)
 
-
         # Save profile button
         self.save_button = QPushButton("Save Profile")
-        self.save_button.clicked.connect(print)
+        self.save_button.clicked.connect(self.save_profile)
         layout.addWidget(self.save_button)
 
         # Set layout to the main window
@@ -156,7 +156,7 @@ class ProfileForm(QWidget):
         )
         self.delete_model_file_button.setEnabled(self.model_files_list.count() > 0)
 
-    """ def save_profile(self):
+    def save_profile(self):
         features = []
         for index in range(self.input_features_list.count()):
             features.append(self.input_features_list.item(index).text())
@@ -168,30 +168,43 @@ class ProfileForm(QWidget):
         profile_name = self.profile_name_input.text()
         profile_description = ""
 
+        profile_data = ProfileData(profile_name, profile_description)
+
         # Fetch model type id from database
-        cur.execute("SELECT model_type_id FROM model_types where name == ?", (model_type_name,))
+        cur.execute(
+            "SELECT model_type_id FROM model_types where name == ?", (model_type_name,)
+        )
         res = cur.fetchone()
-        if res: 
+        if res:
             model_type_id = res[0]
         else:
             print("Error assigning a model type")
-            raise Exception 
-        
-        model_description = ""
+            raise Exception
+
+        models_data = []
+        feature_dict_list: list[dict[str, str]] = []
+        for feature in features:
+            feature_dict = dict()
+            feature_dict["feature_name"] = feature
+            feature_dict["feature_type"] = ""
+            feature_dict["configuration"] = ""
+            feature_dict_list.append(feature_dict)
+
+        for model, path in self.registered_models.items():
+            model_description = ""
+            models_data.append(
+                ModelBlueprint(
+                    model_type_id, model, model_description, path, None, None, feature_dict_list
+                )
+            )
 
 
-        preset_data = PresetData()
-        new_profile = app_profile.create_profile(
-            self.profile_name_input.text(), blueprint, list(self.registered_models.values()), metadata)
+        try: 
+            insert_complete_preset(profile_data, models_data)
+            print("Data saved successfully.")
+        except Exception as e:
+            print(f"Failed to save data. Error: {e}")
 
-        if new_profile != None:
-            ok = app_profile.save_profiles_to_json([new_profile], metadata)
-
-            if ok:  # TODO: Show text box for error
-                print("Data saved successfully.")
-            else:
-                print("Failed to save data.")
-         """
 
 
 def main():

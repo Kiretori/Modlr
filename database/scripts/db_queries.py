@@ -32,7 +32,7 @@ class ModelBlueprint:
             self.features = []
 
 
-def insert_complete_preset(profile_data: ProfileData, model_blueprints: list[ModelBlueprint]) -> dict[str, str]:
+def insert_complete_preset(profile_data: ProfileData, model_blueprints: list[ModelBlueprint]) -> dict[str, str] | Exception:
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
 
@@ -61,7 +61,7 @@ def insert_complete_preset(profile_data: ProfileData, model_blueprints: list[Mod
                     feature.get("feature_type", ""),
                     feature.get("configuration", ""),
                 )
-                feature_ids.append = feature_id
+                feature_ids.append(feature_id)
 
         conn.commit()
 
@@ -93,7 +93,7 @@ def insert_model(
     metrics: str,
 ) -> int | None:
     cur.execute(
-        "INSERT INTO models (profile_id, model_type_id, name, description, model_path, parameters, metrics) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO models (profile_id, model_type_id, name, description, serialized_path, parameters, metrics) VALUES (?, ?, ?, ?, ?, ?, ?)",
         (
             profile_id,
             model_type_id,
