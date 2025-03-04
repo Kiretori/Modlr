@@ -61,17 +61,6 @@ class ProfileForm(QWidget):
         self.input_features_list.itemSelectionChanged.connect(self.update_buttons)
         layout.addWidget(self.input_features_list)
 
-        # Buttons to add and delete input features
-        input_feature_buttons_layout = QHBoxLayout()
-        self.add_input_feature_button = QPushButton("Add Input Feature")
-        self.add_input_feature_button.clicked.connect(print)
-        input_feature_buttons_layout.addWidget(self.add_input_feature_button)
-
-        self.delete_input_feature_button = QPushButton("Delete Input Feature")
-        self.delete_input_feature_button.clicked.connect(print)
-        input_feature_buttons_layout.addWidget(self.delete_input_feature_button)
-        layout.addLayout(input_feature_buttons_layout)
-
         # Target variable name
         layout.addWidget(QLabel("Target variable label:"))
         self.target_variable_input = QLineEdit()
@@ -162,10 +151,6 @@ class ProfileForm(QWidget):
             self.update_buttons()
 
     def update_buttons(self):
-        # Enable/disable the delete buttons based on list content
-        self.delete_input_feature_button.setEnabled(
-            self.input_features_list.count() > 0
-        )
         self.delete_model_file_button.setEnabled(self.model_files_list.count() > 0)
 
     def save_profile(self):
