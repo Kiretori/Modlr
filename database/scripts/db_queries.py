@@ -19,10 +19,7 @@ class ModelBlueprint:
 
     # Model data
     model_name: str
-    model_description: str | None
     model_path: str
-    parameters: str | None
-    metrics: str | None
 
     # Features
     features: list[dict[str, str]] = None
@@ -46,10 +43,7 @@ def insert_complete_preset(profile_data: ProfileData, model_blueprints: list[Mod
                 profile_id,
                 blueprint.model_type_id,
                 blueprint.model_name,
-                blueprint.model_description,
                 blueprint.model_path,
-                blueprint.parameters,
-                blueprint.metrics,
             )
 
             feature_ids = []
@@ -59,7 +53,6 @@ def insert_complete_preset(profile_data: ProfileData, model_blueprints: list[Mod
                     model_id,
                     feature.get("feature_name", ""),
                     feature.get("feature_type", ""),
-                    feature.get("configuration", ""),
                 )
                 feature_ids.append(feature_id)
 
@@ -87,36 +80,28 @@ def insert_model(
     profile_id: int,
     model_type_id: int,
     name: str,
-    description: str,
     model_path: str,
-    parameters: str,
-    metrics: str,
 ) -> int | None:
     cur.execute(
-        "INSERT INTO models (profile_id, model_type_id, name, description, serialized_path, parameters, metrics) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO models (profile_id, model_type_id, name, serialized_path) VALUES (?, ?, ?, ?)",
         (
             profile_id,
             model_type_id,
             name,
-            description,
             model_path,
-            parameters,
-            metrics,
         ),
     )
     return cur.lastrowid
 
 
 def insert_model_feature(
-    cur: Cursor, model_id: int, feature_name: str, feature_type: str, configuration: str
-) -> int | None:
+    cur: Cursor, model_id: int, feature_name: str, feature_type: str) -> int | None:
     cur.execute(
-        "INSERT INTO model_features (model_id, feature_name, feature_type, configuration) VALUES (?, ?, ?, ?)",
+        "INSERT INTO model_features (model_id, feature_name, feature_type) VALUES (?, ?, ?)",
         (
             model_id,
             feature_name,
             feature_type,
-            configuration,
         ),
     )
 

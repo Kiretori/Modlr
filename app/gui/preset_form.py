@@ -18,7 +18,11 @@ from PyQt6.QtCore import Qt
 import os
 from app.utils import get_input_features_from_file
 import database
-from database.scripts.db_queries import ProfileData, ModelBlueprint, insert_complete_preset
+from database.scripts.db_queries import (
+    ProfileData,
+    ModelBlueprint,
+    insert_complete_preset,
+)
 
 
 class ProfileForm(QWidget):
@@ -114,7 +118,15 @@ class ProfileForm(QWidget):
             self, "Select Model File", "", "All Files (*)"
         )
         if file:
-            input_features = get_input_features_from_file(file)
+            try:
+                input_features = get_input_features_from_file(file)
+            except Exception as e:
+                self.warning_box(
+                    "Error",
+                    str(e),
+                    "The file you tried to upload is not a .pkl or .joblib file",
+                )
+                return
 
             if len(self.registered_models) >= 1:
                 for other_model in self.registered_models.values():
@@ -191,20 +203,20 @@ class ProfileForm(QWidget):
             feature_dict_list.append(feature_dict)
 
         for model, path in self.registered_models.items():
-            model_description = ""
             models_data.append(
                 ModelBlueprint(
-                    model_type_id, model, model_description, path, None, None, feature_dict_list
+                    model_type_id=model_type_id,
+                    model_name=model,
+                    model_path=path,
+                    features=feature_dict_list,
                 )
             )
 
-
-        try: 
+        try:
             insert_complete_preset(profile_data, models_data)
             print("Data saved successfully.")
         except Exception as e:
             print(f"Failed to save data. Error: {e}")
-
 
 
 def main():

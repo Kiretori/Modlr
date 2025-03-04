@@ -1,5 +1,5 @@
 import sqlite3
-
+from database.scripts import db_queries as queries
 conn = sqlite3.connect("database/app.db")
 cur = conn.cursor()
 
@@ -17,6 +17,16 @@ for table in tables:
 
 
 cur.executescript(sql_script)
+
+
+
+queries.insert_model_type(cur, "Regressor", "Regression model type")
+queries.insert_model_type(cur, "Classifier", "Classifier model type")
+
+
+
+
+
 conn.commit()
 print("Changes commited")
 conn.close()

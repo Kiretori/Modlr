@@ -22,12 +22,9 @@ CREATE TABLE models (
     profile_id INTEGER NOT NULL,
     model_type_id INTEGER NOT NULL,
     name TEXT NOT NULL,
-    description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    serialized_path TEXT,  -- Path to the serialized model file
-    parameters TEXT,       -- JSON string of model parameters
-    metrics TEXT,          -- JSON string of model performance metrics
+    serialized_path TEXT,
     FOREIGN KEY (profile_id) REFERENCES profiles(profile_id) ON DELETE CASCADE,
     FOREIGN KEY (model_type_id) REFERENCES model_types(model_type_id),
     UNIQUE(profile_id, name)
@@ -39,7 +36,6 @@ CREATE TABLE model_features (
     model_id INTEGER NOT NULL,
     feature_name TEXT NOT NULL,
     feature_type TEXT NOT NULL,
-    configuration TEXT,    -- JSON string for feature-specific configuration
     FOREIGN KEY (model_id) REFERENCES models(model_id) ON DELETE CASCADE,
     UNIQUE(model_id, feature_name)
 );

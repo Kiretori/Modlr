@@ -5,7 +5,10 @@ import pickle
 import joblib
 import os
 
+class FileExtensionError(Exception):
+    pass 
 
+# Extract input features
 def get_input_features_from_file(path: str) -> list[str]:
     extension = os.path.splitext(os.path.basename(path))[1]
     if extension == ".pkl":
@@ -13,8 +16,7 @@ def get_input_features_from_file(path: str) -> list[str]:
     elif extension == ".joblib":
         return _get_features_joblib(path)
     else:
-        print("Can't retrieve input features names from this type of file")
-        return list()
+        raise FileExtensionError("Wrong file extension!")
 
 
 def _get_features_pkl(path: str) -> list[str]:
