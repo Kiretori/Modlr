@@ -163,6 +163,15 @@ class ProfileForm(QWidget):
         model_type_name = self.model_type_dropdown.currentText()
 
         profile_name = self.profile_name_input.text()
+
+        if not profile_name.strip():
+            self.warning_box(
+                window_title="Invalid data",
+                text="Invalid profile name",
+                additional_text="Please enter a profile name.",
+            )
+            return
+
         profile_description = ""
 
         profile_data = ProfileData(profile_name, profile_description)
@@ -184,7 +193,6 @@ class ProfileForm(QWidget):
             feature_dict = dict()
             feature_dict["feature_name"] = feature
             feature_dict["feature_type"] = ""
-            feature_dict["configuration"] = ""
             feature_dict_list.append(feature_dict)
 
         for model, path in self.registered_models.items():
@@ -201,7 +209,9 @@ class ProfileForm(QWidget):
             insert_complete_preset(profile_data, models_data)
             print("Data saved successfully.")
         except Exception as e:
-            print(f"Failed to save data. Error: {e}")
+            self.warning_box(
+                window_title="Error", text="Can't save profile", additional_text=str(e)
+            )
 
 
 def main():

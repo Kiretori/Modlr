@@ -12,6 +12,7 @@ class ProfileData:
     profile_name: str
     profile_description: str
 
+
 @dataclass
 class ModelBlueprint:
     # Model type data
@@ -29,13 +30,17 @@ class ModelBlueprint:
             self.features = []
 
 
-def insert_complete_preset(profile_data: ProfileData, model_blueprints: list[ModelBlueprint]) -> dict[str, str] | Exception:
+def insert_complete_preset(
+    profile_data: ProfileData, model_blueprints: list[ModelBlueprint]
+) -> dict[str, str] | Exception:
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
 
     try:
         # Insert profile
-        profile_id = insert_profile(cur, profile_data.profile_name, profile_data.profile_description)
+        profile_id = insert_profile(
+            cur, profile_data.profile_name, profile_data.profile_description
+        )
 
         for blueprint in model_blueprints:
             model_id = insert_model(
@@ -95,7 +100,8 @@ def insert_model(
 
 
 def insert_model_feature(
-    cur: Cursor, model_id: int, feature_name: str, feature_type: str) -> int | None:
+    cur: Cursor, model_id: int, feature_name: str, feature_type: str
+) -> int | None:
     cur.execute(
         "INSERT INTO model_features (model_id, feature_name, feature_type) VALUES (?, ?, ?)",
         (
@@ -118,3 +124,31 @@ def insert_profile(cur: Cursor, name: str, description: str) -> None | int:
     )
     return cur.lastrowid
 
+
+def get_profile_data(profile_name: str) -> dict[str, str]:
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+            SELECT m.* 
+            FROM models m 
+            JOIN profiles p on m.profile_id = p.profile_id 
+            WHERE p.name = ?
+        """,
+        (profile_name,),
+    )
+
+    rows = cur.fetchall()
+    conn.close()
+
+    models = []
+
+    for m in rows:
+        model = ModelBlueprint(model_type_id=m["model_id"], model_name=m["name"], model_path=m["serialized_path"])
+        models.append(model)
+
+
+    
+    return models
