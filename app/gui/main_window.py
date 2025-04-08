@@ -4,7 +4,8 @@ from PyQt6.QtWidgets import (
     QListView, QComboBox, QFileDialog, QTableWidget, QTableWidgetItem, QSplitter
 )
 from PyQt6.QtCore import Qt, QSize
-
+from database import DB_PATH
+import sqlite3 
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -18,7 +19,16 @@ class MainWindow(QWidget):
         # Profile selection
         left_layout.addWidget(QLabel('Select Profile:'))
         self.profile_combo = QComboBox()
-        self.profile_combo.addItems(["Profile 1", "Profile 2", "Profile 3"])  # Example profiles
+
+        # Fetch all profiles
+        with sqlite3.connect(DB_PATH) as conn:
+            cur = conn.cursor()
+            cur.execute("SELECT name FROM profiles")
+            profile_names = map(lambda row: row[0], cur.fetchall())
+        
+        
+
+        self.profile_combo.addItems(profile_names)  # Example profiles
         left_layout.addWidget(self.profile_combo)
 
         # Create new profile button
@@ -61,6 +71,8 @@ def main():
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
+
+
 
 if __name__ == '__main__':
     main()
