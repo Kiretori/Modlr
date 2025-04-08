@@ -8,6 +8,7 @@ wheels/
 *.db
 # Virtual environments
 .venv
-models
+models/
+test_data/
 quick_script.py
 todo.md

@@ -4,9 +4,8 @@ from sklearn.base import BaseEstimator
 import pickle
 import joblib
 import os
+from app.customerrors import FileExtensionError
 
-class FileExtensionError(Exception):
-    pass 
 
 # Extract input features
 def get_input_features_from_file(path: str) -> list[str]:

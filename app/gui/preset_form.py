@@ -10,11 +10,10 @@ from PyQt6.QtWidgets import (
     QListWidget,
     QHBoxLayout,
     QFileDialog,
-    QInputDialog,
     QComboBox,
     QMessageBox,
 )
-from PyQt6.QtCore import Qt
+
 import os
 from app.utils import get_input_features_from_file
 import database
